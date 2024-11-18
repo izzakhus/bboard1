@@ -1,5 +1,3 @@
-
-
 """
 Django settings for samplesite project.
 
@@ -42,8 +40,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    'bboard',# 'bboard.apps.BboardConfig',
-    'mypage',
+    'bboard',  # 'bboard.apps.BboardConfig',
+    'testapp',
 ]
 
 MIDDLEWARE = [

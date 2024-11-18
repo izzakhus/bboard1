@@ -17,9 +17,10 @@ class MinMaxValueValidator:
     def __call__(self, val):
         if val < self.min_value or val > self.max_value:
             raise ValidationError('Введённое число должно'
-                                  'находиться в диапазоне от %(min)s до %(max)s',
-                                  code='out_of_range',
-                                  params={'min': self.min_value, 'max': self.max_value})
+                  'находиться в диапазоне от %(min)s до %(max)s',
+                  code='out_of_range',
+                  params={'min': self.min_value, 'max': self.max_value})
+
 
 
 class Rubric(models.Model):
@@ -66,7 +67,7 @@ class Bb(models.Model):
     # KINDS = (
     #     ('Купля-продажа', (
     #         ('b', 'Куплю'),
-    #         ('s', 'Про    дам'),
+    #         ('s', 'Продам'),
     #     )),
     #     ('Обмен', (
     #         ('c', 'Обменяю'),
@@ -144,6 +145,8 @@ class Bb(models.Model):
 
     class Meta:
         ordering = ['-published', 'title']
+        # order_with_respect_to = 'rubric'
+
         unique_together = ('title', 'published')
         verbose_name = 'Объявление'
         verbose_name_plural = 'Объявления'
