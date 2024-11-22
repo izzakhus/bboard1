@@ -10,6 +10,14 @@ class AdvUser(models.Model):
 class Spare(models.Model):
     name = models.CharField(max_length=30)
 
+
 class Machine(models.Model):
     name = models.CharField(max_length=30)
     spares = models.ManyToManyField(Spare)
+
+
+class Comment(models.Model):
+    text = models.TextField()
+
+    def __str__(self):
+        return f'{self.text}
