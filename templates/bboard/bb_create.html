@@ -6,7 +6,8 @@
 {% block content %}
 <h2>Добавление объявления</h2>
 
-    <form method="post">
+<!--    <form method="post" action="{% url 'bboard:add_save %}">-->
+   <form method="post">
         {% csrf_token %}
         {{ form.as_p }}
         <button type="submit">Добавить</button>

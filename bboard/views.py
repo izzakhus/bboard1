@@ -1,22 +1,43 @@
 from django.db.models import Count
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.template import loader
+from django.template.loader import get_template, render_to_string
 from django.urls import reverse_lazy
 from django.views.generic.edit import CreateView
 
-# from bboard.forms import BbForm
+from bboard.forms import BbForm
 from bboard.models import Bb, Rubric
 
 
+# def index(request):
+#     bbs = Bb.objects.order_by('-published')
+#     rubrics = Rubric.objects.annotate(cnt=Count('bb')).filter(cnt__gt=0)
+#     context = {'bbs': bbs, 'rubrics': rubrics}
+#
+#     return render(request, 'bboard/index.html', context)
+
+# def index(request):
+#     resp = HttpResponse('Тут будет', content_type='text/plain; charset=utf-8')
+#     resp.write(' главная')
+#     resp.writelines((' страница', ' сайта'))
+#     resp['keywords'] = 'Python', 'Django'
+#     return resp
+
+
+# def index(request):
+#     bbs = Bb.objects.alL()
+#     rubrics = Rubric.objects.all()
+#     context = {'bbs': bbs, 'rubrics': rubrics}
+#     template = get_template('bboard/index.html')
+#     return HttpResponse(template.render(context, request))
+
+
 def index(request):
-    bbs = Bb.objects.order_by('-published')
-    rubrics = Rubric.objects.annotate(cnt=Count('bb')).filter(cnt__gt=0)
+    bbs = Bb.objects.all()
+    rubrics = Rubric.objects.all()
     context = {'bbs': bbs, 'rubrics': rubrics}
-
-    return render(request, 'bboard/index.html', context)
-
-
+    return HttpResponse(render_to_string('bboard/index.html', request))
 # def by_rubric(request, rubric_id, mode):
 def by_rubric(request, rubric_id):
     bbs = Bb.objects.filter(rubric=rubric_id)
@@ -39,3 +60,31 @@ class BbCreateView(CreateView):
         context = super().get_context_data(**kwargs)
         context['rubrics'] = Rubric.objects.annotate(cnt=Count('bb')).filter(cnt__gt=0)
         return context
+
+
+def add(request):
+    bbf = BbForm()
+    context = {'form': bbf}
+    return render(request, 'bboard/bb_create.html', context)
+
+
+def add_save(request):
+    bbf = BbForm(request.POST)
+    if bbf.is_valid():
+        bbf.save()
+        return HttpResponseRedirect(reverse('bboard:by_rubric', kwargs={'rubric_id': bbf.cleaned_data['rubric'].pk}))
+    else:
+        context = {'form': bbf}
+        return render(request, 'bboard/bb_create.html', context)
+
+
+def add_and_save(request):
+    if request.method == 'POST':
+        bbf = BbForm(request.POST)
+        if bbf.is_valid():
+            bbf.save()
+            return HttpResponseRedirect(reverse('bboard:by_rubric', kwargs={'rubric_id': bbf.cleaned_data['rubric'].pk}))
+        else:
+            bbf = BbForm()
+            context = {'form': bbf}
+            return render(request, 'bboard/bb_create.html', context)

@@ -7,3 +7,4 @@ urlpatterns = [
     path('<int:sms_id>/', delete_comment, name='delete_comment'),
 
 ]
+path('comments/', get_comment)

@@ -18,6 +18,3 @@ class Machine(models.Model):
 
 class Comment(models.Model):
     text = models.TextField()
-
-    def __str__(self):
-        return f'{self.text}
