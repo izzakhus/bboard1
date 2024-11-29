@@ -118,7 +118,7 @@ class Bb(models.Model):
         verbose_name='Опубликовано',
     )
 
-    # is_active = models.BooleanField()
+        # is_active = models.BooleanField()
     # email = models.EmailField()
     # url = models.URLField()
     # slug = models.SlugField()
