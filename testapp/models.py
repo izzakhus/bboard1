@@ -17,5 +17,5 @@ class Machine(models.Model):
 
 
 class ItemList(models.Model):
-    name = models.CharField(max_length=100)  # Название записи
+    name = models.CharField(max_length=100)
     items = models.TextField()
