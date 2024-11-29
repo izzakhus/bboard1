@@ -85,6 +85,7 @@ class Bb(models.Model):
         null=True,
         on_delete=models.PROTECT,
         verbose_name='Рубрика',
+        # related_name='entries',  # вместо bb_set
     )
 
     title = models.CharField(

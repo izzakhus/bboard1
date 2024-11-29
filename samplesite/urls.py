@@ -17,14 +17,18 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
-from bboard.views import BbCreateView, by_rubric, index
+# from bboard.views import BbCreateView, by_rubric, index
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('bboard.urls', namespace='bboard')),
+
+    # path('', include('bboard.urls', namespace='default-bboard')),
+    # path('bboard/', include('bboard.urls', namespace='other-bboard')),
+
     # path('', include([
     #     path('add/', BbCreateView.as_view(), name='add'),
-    #     path('<int:rubric_id/', by_rubric, name='by_rubric'),
+    #     path('<int:rubric_id>/', by_rubric, name='by_rubric'),
     #     path('', index, name='index'),
     # ])),
 ]
