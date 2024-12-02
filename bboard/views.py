@@ -1,9 +1,12 @@
 from django.db.models import Count
-from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotFound, Http404
-from django.shortcuts import render
+from django.http import (HttpResponse, HttpResponseRedirect, HttpResponseNotFound,
+                         Http404, StreamingHttpResponse, FileResponse, JsonResponse)
+from django.shortcuts import render, redirect, get_object_or_404, get_list_or_404
 from django.template import loader
 from django.template.loader import render_to_string
 from django.urls import reverse_lazy, reverse
+from django.views.decorators.http import (require_http_methods,
+                                          require_GET, require_POST, require_safe)
 from django.views.generic.edit import CreateView
 
 from bboard.forms import BbForm
@@ -12,33 +15,32 @@ from bboard.models import Bb, Rubric
 
 # Основной (вернуть)
 def index(request):
-    # Todo:Удалить
-    # print(request.scheme)
-    # print(request.path)
-    # print(request.path_info)
-    # print(request.encoding)
-    # print(request.content_type)
-    # print(request.content_params)
-    # print(request.headers)
-    # print(request.headers['Accept-Encoding'])
-    # print(request.headers['accept-encoding'])
-    # print(request.headers['accept_encoding'])
-    # print(request.META)
-    # print(request.META['CONTENT_TYPE'])
-    # print(request.META['HTTP_HOST'])
-    # print(request.META['HTTP_USER_AGENT'])
-    # print(request.META['HTTP_REFERER'])
-    # print(request.body)
-    # print(request.resolver_match)
-    # print(request.get_host())
-    # Todo:Удалить
-
     bbs = Bb.objects.order_by('-published')
     # rubrics = Rubric.objects.all()
     rubrics = Rubric.objects.annotate(cnt=Count('bb')).filter(cnt__gt=0)
     context = {'bbs': bbs, 'rubrics': rubrics}
 
     return render(request, 'bboard/index.html', context)
+
+
+# def index(request):
+#     resp_content = ('Здесь будет', ' главная', ' страница', ' сайта')
+#     resp = StreamingHttpResponse(resp_content,
+#                                  content_type='text/plain; charset=utf-8')
+#     return resp
+
+
+# def index(request):
+#     # filename = r'c:/image/image.png'
+#     # return FileResponse(open(filename, 'rb'))
+#
+#     filename = r'c:/archives/archive.zip'
+#     return FileResponse(open(filename, 'rb'), as_attachment=True)
+
+
+# def index(request):
+#     data = {'title': 'Мотоцикл', 'content': 'Старый', 'price': 10_000.0}
+#     return JsonResponse(data)
 
 
 # def index(request):
@@ -67,7 +69,8 @@ def index(request):
 
 # def by_rubric(request, rubric_id, mode):
 def by_rubric(request, rubric_id):
-    bbs = Bb.objects.filter(rubric=rubric_id)
+    # bbs = Bb.objects.filter(rubric=rubric_id)
+    bbs = get_list_or_404(Bb, rubric=rubric_id)
     # rubrics = Rubric.objects.all()
     rubrics = Rubric.objects.annotate(cnt=Count('bb')).filter(cnt__gt=0)
     current_rubric = Rubric.objects.get(pk=rubric_id)
@@ -108,13 +111,16 @@ def add_save(request):
         return render(request, 'bboard/bb_create.html', context)
 
 
+@require_http_methods(['GET', 'POST'])
 def add_and_save(request):
     if request.method == 'POST':
         bbf = BbForm(request.POST)
         if bbf.is_valid():
             bbf.save()
-            return HttpResponseRedirect(reverse('bboard:by_rubric',
-                        kwargs={'rubric_id': bbf.cleaned_data['rubric'].pk}))
+            # return HttpResponseRedirect(reverse('bboard:by_rubric',
+            #             kwargs={'rubric_id': bbf.cleaned_data['rubric'].pk}))
+            return redirect('bboard:by_rubric',
+                            rubric_id=bbf.cleaned_data['rubric'].pk)
             # return HttpResponseRedirect('/')
             # return HttpResponseRedirect(reverse('bboard:index'))
             # return HttpResponseRedirect(reverse('https://www.random.org/'))
@@ -123,13 +129,15 @@ def add_and_save(request):
             return render(request, 'bboard/bb_create.html', context)
     else:
         bbf = BbForm()
+
         context = {'form': bbf}
         return render(request, 'bboard/bb_create.html', context)
 
 
 def bb_detail(request, bb_id):
     try:
-        bb = Bb.objects.get(pk=bb_id)
+        # bb = Bb.objects.get(pk=bb_id)
+        bb = get_object_or_404(Bb, pk=bb_id)
     except Bb.DoesNotExist:
         # return HttpResponseNotFound('Такое объявление не существует')
         return Http404('Такое объявление не существует')

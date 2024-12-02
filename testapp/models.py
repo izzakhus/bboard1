@@ -14,8 +14,3 @@ class Spare(models.Model):
 class Machine(models.Model):
     name = models.CharField(max_length=30)
     spares = models.ManyToManyField(Spare)
-
-
-class ItemList(models.Model):
-    name = models.CharField(max_length=100)
-    items = models.TextField()

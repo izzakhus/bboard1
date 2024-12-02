@@ -42,7 +42,6 @@ INSTALLED_APPS = [
 
     'bboard',  # 'bboard.apps.BboardConfig',
     'testapp',
-    'kiosk',
 ]
 
 MIDDLEWARE = [
