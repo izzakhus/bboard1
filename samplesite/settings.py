@@ -42,6 +42,7 @@ INSTALLED_APPS = [
 
     'bboard',  # 'bboard.apps.BboardConfig',
     'testapp',
+    # 'todolist',
 ]
 
 MIDDLEWARE = [
