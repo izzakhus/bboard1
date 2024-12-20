@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ task.title }}</title>
+</head>
+<body>
+    <h1>{{ task.title }}</h1>
+    <p>{{ task.description }}</p>
+    <p>Дата создания: {{ task.created_at }}</p>
+    <a href="{% url 'task_list' %}">Назад к списку задач</a>
+</body>
+</html>
