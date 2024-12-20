@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+
+{% load static %}
+
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Главная{% endblock %} :: Доска объявлений</title>
+
+    <link rel="stylesheet" href="{% static 'bboard/style.css' %}">
+</head>
+<body>
+
+<header>
+    <h1>Объявления</h1>
+</header>
+
+{#{% include "layout/inc/inc_main_menu.html" %}#}
+
+<section>
+    {% block content %}
+        <p>Содержимое базового шаблона</p>
+    {% endblock %}
+</section>
+
+<footer>
+    {% now 'SHORT_DATETIME_FORMAT' %}
+</footer>
+
+</body>
+</html>

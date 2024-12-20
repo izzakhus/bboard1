@@ -1,4 +1,6 @@
+from django.core.paginator import Paginator
 from django.db.models import Count
+from django.forms import modelformset_factory
 from django.http import (HttpResponse, HttpResponseRedirect, HttpResponseNotFound,
                          Http404, StreamingHttpResponse, FileResponse, JsonResponse)
 from django.shortcuts import render, redirect, get_object_or_404, get_list_or_404
@@ -19,11 +21,29 @@ from bboard.models import Bb, Rubric
 
 
 # Основной (вернуть)
+# def index(request):
+#     bbs = Bb.objects.order_by('-published')
+#     # rubrics = Rubric.objects.all()
+#     rubrics = Rubric.objects.annotate(cnt=Count('bb')).filter(cnt__gt=0)
+#     context = {'bbs': bbs, 'rubrics': rubrics}
+#
+#     return render(request, 'bboard/index.html', context)
+
+
 def index(request):
     bbs = Bb.objects.order_by('-published')
-    # rubrics = Rubric.objects.all()
     rubrics = Rubric.objects.annotate(cnt=Count('bb')).filter(cnt__gt=0)
-    context = {'bbs': bbs, 'rubrics': rubrics}
+
+    paginator = Paginator(bbs, 2)
+
+    if 'page' in request.GET:
+        page_num = request.GET['page']
+    else:
+        page_num = 1
+
+    page = paginator.get_page(page_num)
+
+    context = {'bbs': page.object_list, 'rubrics': rubrics, 'page': page}
 
     return render(request, 'bboard/index.html', context)
 
@@ -103,6 +123,7 @@ class BbCreateView(CreateView):
     model = Bb
     form_class = BbForm
     success_url = reverse_lazy('bboard:index')
+    # initial = {'price': 1000.0}
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -124,12 +145,13 @@ def add_and_save(request):
             context = {'form': bbf}
             return render(request, 'bboard/bb_create.html', context)
     else:
+        # bbf = BbForm(initial={'price': 1000.0})
         bbf = BbForm()
-
         context = {'form': bbf}
         return render(request, 'bboard/bb_create.html', context)
 
 
+# Основной, вернуть
 class BbEditView(UpdateView):
     model = Bb
     form_class = BbForm
@@ -140,6 +162,24 @@ class BbEditView(UpdateView):
         context['rubrics'] = Rubric.objects.annotate(
                                             cnt=Count('bb')).filter(cnt__gt=0)
         return context
+
+
+def edit(request, pk):
+    bb = Bb.objects.get(pk=pk)
+    if request.method == 'POST':
+        bbf = BbForm(request.POST, instance=bb)
+        if bbf.is_valid():
+            # if bbf.has_changed():
+            bbf.save()
+            return HttpResponseRedirect(reverse('bboard:by_rubric',
+                        kwargs={'rubric_id': bbf.cleaned_data['rubric'].pk}))
+        else:
+            context = {'form': bbf}
+            return render(request, 'bboard/bb_form.html', context)
+    else:
+        bbf = BbForm(instance=bb)
+        context = {'form': bbf}
+        return render(request, 'bboard/bb_form.html', context)
 
 
 def bb_detail(request, bb_id):
@@ -175,3 +215,29 @@ class BbDeleteView(DeleteView):
         context['rubrics'] = Rubric.objects.annotate(
                                             cnt=Count('bb')).filter(cnt__gt=0)
         return context
+
+
+def rubrics(request):
+    RubricFormSet = modelformset_factory(Rubric, fields=('name',),
+                                         can_order=True
+                                         , can_delete=True)
+
+    if request.method == 'POST':
+        formset = RubricFormSet(request.POST)
+        if formset.is_valid():
+            formset.save(commit=False)
+            for form in formset:
+                if form.cleaned_data:
+                    rubric = form.save(commit=False)
+                    if rubric in formset.deleted_objects:
+                        rubric.delete()
+                    else:
+                        if form['ORDER'].data:
+                            rubric.order = form['ORDER'].data
+                        rubric.save()
+            return redirect('bboard:index')
+    else:
+        formset = RubricFormSet()
+    context = {'formset': formset}
+    return render(request, 'bboard/rubrics.html', context)
+
