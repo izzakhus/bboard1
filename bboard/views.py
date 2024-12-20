@@ -241,3 +241,8 @@ def rubrics(request):
     context = {'formset': formset}
     return render(request, 'bboard/rubrics.html', context)
 
+
+def some_view(request):
+    if not request.user.is_authenticated:
+        return redirect('/')
+    return render(request, 'bboard/some_template.html')
