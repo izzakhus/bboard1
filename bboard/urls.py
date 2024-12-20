@@ -33,4 +33,11 @@ urlpatterns = [
 
     path('', index, name='index'),
     # path('', BbIndexView.as_view(), name='index'),
+
+    # Маршруты с регулярными выражениями
+    re_path(r'^(?P<year>\d{4})/(?P<month>\d{1,2})/(?P<day>\d{1,2})/$', BbRedirectView.as_view(), name='old_archive'),
+    re_path(r'^edit/(?P<pk>\d+)/$', BbEditView.as_view(), name='edit'),
+    re_path(r'^delete/(?P<pk>\d+)/$', BbDeleteView.as_view(), name='delete'),
+    re_path(r'^(?P<rubric_id>\d+)/$', BbRubricBbsView.as_view(), name='by_rubric'),
+    re_path(r'^detail/(?P<pk>\d+)/$', BbDetailView.as_view(), name='detail'),
 ]
