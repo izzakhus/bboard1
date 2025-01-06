@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from django.core.paginator import Paginator
 from django.db.models import Count
 from django.forms import modelformset_factory
@@ -246,3 +247,16 @@ def some_view(request):
     if not request.user.is_authenticated:
         return redirect('/')
     return render(request, 'bboard/some_template.html')
+
+
+class FirstUserView(TemplateView):
+    template_name = 'users/first_user.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        try:
+            first_user = User.objects.earliest('date_joined')
+            context['first_user'] = first_user
+        except User.DoesNotExist:
+            raise Http404("Первый пользователь отсутствует")
+        return context

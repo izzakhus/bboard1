@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Первый пользователь</title>
+</head>
+<body>
+    <h1>Данные первого пользователя</h1>
+    {% if first_user %}
+        <p><strong>Имя пользователя:</strong> {{ first_user.username }}</p>
+        <p><strong>Email:</strong> {{ first_user.email }}</p>
+        <p><strong>Дата регистрации:</strong> {{ first_user.date_joined }}</p>
+    {% else %}
+        <p>Пользователь не найден.</p>
+    {% endif %}
+</body>
+</html>
