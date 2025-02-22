@@ -1,10 +1,10 @@
 from django.urls import path
 
-from testapp.views import get_comment, delete_comment
+from testapp.views import test_cookie, test_mail
+
+app_name = 'testapp'
 
 urlpatterns = [
-    path('comments/', get_comment, name='get_comment'),
-    path('<int:sms_id>/', delete_comment, name='delete_comment'),
-
+    path('cookie/', test_cookie, name='test_cookie'),
+    path('email/', test_mail, name='test_mail'),
 ]
-path('comments/', get_comment)

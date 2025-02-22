@@ -1,7 +1,19 @@
+from datetime import datetime
+from os.path import splitext
+
 from django.core import validators
 from django.core.exceptions import ValidationError
 from django.db import models
+from easy_thumbnails.fields import ThumbnailerImageField
 
+
+# from precise_bbcode.fields import BBCodeTextField
+
+
+def get_timestamp_path(instance, filename):
+    # return '%s%s' % (datetime.now().timestamp(),
+    #                  splitext(filename)[1])
+    return f'{datetime.now().timestamp()}{splitext(filename)[1]}'
 
 def validate_even(val):
     if val % 2 != 0:
@@ -21,6 +33,15 @@ class MinMaxValueValidator:
                   code='out_of_range',
                   params={'min': self.min_value, 'max': self.max_value})
 
+
+class Img(models.Model):
+    img = models.ImageField(verbose_name='Изображение',
+                            upload_to=get_timestamp_path)
+    desc = models.TextField(verbose_name='Описание')
+
+    class Meta:
+        verbose_name = 'Изображение'
+        verbose_name_plural = 'Изображения'
 
 
 class RubricQuerySet(models.QuerySet):
@@ -134,6 +155,12 @@ class Bb(models.Model):
         verbose_name='Описание',
     )
 
+    # content = BBCodeTextField(
+    #     null=True,
+    #     blank=True,
+    #     verbose_name='Описание',
+    # )
+
     # price = models.FloatField(null=True, blank=True, verbose_name='Цена')
     price = models.DecimalField(
         max_digits=15,
@@ -155,6 +182,18 @@ class Bb(models.Model):
     # email = models.EmailField()
     # url = models.URLField()
     # slug = models.SlugField()
+
+    # archive = models.FileField(upload_to='archives/')
+    # archive = models.FileField(upload_to='archives/%Y/%m/%d/')
+    # file = models.FileField(upload_to=get_timestamp_path)
+
+    img = models.ImageField(blank=True,
+                            upload_to=get_timestamp_path,
+                            verbose_name='Изображение')
+
+    # thumb = ThumbnailerImageField(
+    #     resize_source={'size': (400, 300), 'crop': 'scale'},
+    # )
 
     objects = models.Manager()
     by_price = BbManager()

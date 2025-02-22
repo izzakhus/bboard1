@@ -7,7 +7,24 @@ from django.forms import ModelForm, modelform_factory, Select, modelformset_fact
 from django.forms.fields import DecimalField
 from django.forms.models import BaseModelFormSet
 
-from bboard.models import Bb, Rubric
+from bboard.models import Bb, Rubric, Img
+
+
+class ImgForm(ModelForm):
+    img = forms.ImageField(
+        label='Изображение',
+        # widget=forms.widgets.ClearableFileInput(attrs={'multiple': True}),
+        validators=[validators.FileExtensionValidator(
+            allowed_extensions=('gif', 'jpg', 'png'))],
+        error_messages={
+            'invalid_extension': 'Этот формат не поддерживается'})
+
+    desc = forms.CharField(label='Описание',
+                           widget=forms.widgets.Textarea())
+
+    class Meta:
+        model = Img
+        fields = '__all__'
 
 
 # Основной (вернуть)
@@ -18,11 +35,11 @@ class BbForm(ModelForm):
         error_messages={'invalid': 'Слишком короткое название товара'}
     )
 
-    captcha = CaptchaField(label='Введите текст с картинки',
-                           # generator='captcha.helpers.random_char_challenge',
-                           # generator='captcha.helpers.math_challenge',
-                           # generator='captcha.helpers.word_challenge',
-                           error_messages={'invalid': 'Неправильный текст'})
+    # captcha = CaptchaField(label='Введите текст с картинки',
+    #                        # generator='captcha.helpers.random_char_challenge',
+    #                        # generator='captcha.helpers.math_challenge',
+    #                        # generator='captcha.helpers.word_challenge',
+    #                        error_messages={'invalid': 'Неправильный текст'})
 
     def clean_title(self):
         val = self.cleaned_data['title']
@@ -45,7 +62,7 @@ class BbForm(ModelForm):
 
     class Meta:
         model = Bb
-        fields = ('title', 'content', 'price', 'rubric')
+        fields = ('title', 'content', 'price', 'rubric', 'img')
         help_texts = {'rubric': 'Не забудьте выбрать рубрику!'}
 
 
