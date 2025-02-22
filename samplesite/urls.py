@@ -40,5 +40,10 @@ urlpatterns = [
          name='password_reset_complete'),
 
     path('todo/', include('todolist.urls', namespace='todo')),
+
     path('', include('bboard.urls', namespace='bboard')),
+]
+
+urlpatterns += [
+    path('captcha/', include('captcha.urls')),
 ]
