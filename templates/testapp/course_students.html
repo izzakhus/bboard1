@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <title>Курсы и студенты</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+    <header>
+        <h1>Список курсов и студентов</h1>
+    </header>
+
+    <main>
+        <h2>Курсы</h2>
+        <ul>
+        {% for course in courses %}
+            <li>{{ course.title }} (начало: {{ course.start_date }}) - Студент: {{ course.students__first_name }} {{ course.students__last_name }}</li>
+        {% empty %}
+            <li>Курсов пока нет</li>
+        {% endfor %}
+        </ul>
+
+        <h2>Студенты</h2>
+        <ul>
+        {% for student in students %}
+            <li>{{ student.first_name }} {{ student.last_name }} - Курс: {{ student.courses__title }}</li>
+        {% empty %}
+            <li>Студентов пока нет</li>
+        {% endfor %}
+        </ul>
+    </main>
+
+    <footer>
+        <p>© 2025 Моя школа</p>
+    </footer>
+</body>
+</html>

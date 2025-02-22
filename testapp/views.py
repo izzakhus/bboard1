@@ -3,6 +3,7 @@ from django.core.mail import (EmailMessage, get_connection,
                               EmailMultiAlternatives, send_mail,
                               send_mass_mail, mail_managers)
 from django.shortcuts import render
+from .models import Student, Course
 from django.template.loader import render_to_string
 
 
@@ -80,7 +81,6 @@ def test_mail(request):
     # em.attach_alternative('<h1>Test</h1>', 'text/html')
     # em.send()
 
-
     ##### Высокоуровневые #####
     # send_mail('Test email', 'Test!!!', 'webmaster@supersite.kz',
     #           ['user@othersite.kz'], html_message='<h1>Test!!!</h1>')
@@ -101,7 +101,20 @@ def test_mail(request):
 
     return render(request, 'testapp/test_email.html')
 
+
 def hide_comment(request):
-    if request.user.has_perm('testapp.hide_comments'):
-        # пользователь может скрывать комменты
-        pass
+    # пользователь может скрывать комменты
+    if not request.user.has_perm('testapp.hide_comments'):
+        return
+    passc1.students.add(s1, s2)
+
+
+def course_students(request):
+    courses = Course.objects.select_related().values('title', 'start_date', 'students__first_name',
+                                                     'students__last_name')
+    students = Student.objects.prefetch_related('courses').values('first_name', 'last_name', 'courses__title')
+    context = {
+        'courses': courses,
+        'students': students,
+    }
+    return render(request, 'testapp/course_students.html', context)
