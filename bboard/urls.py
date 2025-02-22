@@ -1,4 +1,4 @@
-from django.urls import path, re_path
+from django.urls import path
 from django.views.generic.dates import WeekArchiveView, DayArchiveView
 from django.views.generic.edit import CreateView
 
@@ -6,7 +6,7 @@ from bboard.models import Bb
 from bboard.views import (index, by_rubric, BbCreateView,
                           add_and_save, bb_detail, BbRubricBbsView,
                           BbDetailView, BbEditView, BbDeleteView, BbIndexView,
-                          BbRedirectView, edit)
+                          BbRedirectView, edit, rubrics, bbs)
 
 app_name = 'bboard'
 
@@ -20,6 +20,9 @@ urlpatterns = [
     #                             context_object_name='bbs')),
     path('<int:year>/<int:month>/<int:day>/', BbRedirectView.as_view(),
          name='old_archive'),
+
+    path('rubrics/', rubrics, name='rubrics'),
+    path('bbs/<int:rubric_id>/', bbs, name='bbs'),
 
     path('add/', BbCreateView.as_view(), name='add'),
     path('edit/<int:pk>/', BbEditView.as_view(), name='edit'),
