@@ -4,6 +4,8 @@ from django.core.mail import (EmailMessage, get_connection,
                               send_mass_mail, mail_managers)
 from django.shortcuts import render
 from django.template.loader import render_to_string
+from .models import Student, Course
+from datetime import date
 
 
 def test_cookie(request):
@@ -105,3 +107,32 @@ def hide_comment(request):
     if request.user.has_perm('testapp.hide_comments'):
         # пользователь может скрывать комменты
         pass
+
+
+def populate_data(request):
+    Student.objects.all().delete()
+    Course.objects.all().delete()
+
+    s1 = Student.objects.create(first_name="Иван", last_name="Петров", email="ivan@example.com", enrollment_date=date(2023, 9, 1))
+    s2 = Student.objects.create(first_name="Мария", last_name="Иванова", email="maria@example.com", enrollment_date=date(2023, 10, 1))
+    s3 = Student.objects.create(first_name="Алексей", last_name="Сидоров", email="alex@example.com", enrollment_date=date(2023, 9, 15))
+
+    c1 = Course.objects.create(title="Python для начинающих", description="Основы программирования", start_date=date(2024, 1, 10))
+    c2 = Course.objects.create(title="Веб-разработка", description="HTML, CSS, Django", start_date=date(2024, 2, 1))
+
+    c1.students.add(s1, s2)
+    c2.students.add(s2, s3)
+
+    return render(request, 'success.html', {'message': 'Данные успешно добавлены'})
+
+
+def course_students(request):
+    courses = Course.objects.select_related().values('title', 'start_date', 'students__first_name', 'students__last_name')
+
+    students = Student.objects.prefetch_related('courses').values('first_name', 'last_name', 'courses__title')
+
+    context = {
+        'courses': courses,
+        'students': students,
+    }
+    return render(request, 'course_students.html', context)

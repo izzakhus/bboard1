@@ -4,8 +4,8 @@ from django.db import models
 from django.contrib.auth.models import User, AbstractUser
 
 
-class AdvUser(models.Model):
-    is_activated = models.BooleanField(default=True)
+# class AdvUser(models.Model):
+#     is_activated = models.BooleanField(default=True)
 
 # class Profile(models.Model):
 #     phone = models.CharField(max_length=20)
@@ -22,7 +22,7 @@ class AdvUser(models.Model):
 #     class Meta:
 #         proxy = True
 
-
+#
 class Spare(models.Model):
     name = models.CharField(max_length=30)
     notes = GenericRelation('Note', related_query_name='spare')
@@ -47,24 +47,24 @@ class Note(models.Model):
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey(ct_field='content_type',
                                        fk_field='object_id')
-
-
-# 1. Прямое наследование
-class Message(models.Model):
-    content = models.TextField()
-    published = models.DateTimeField(auto_now_add=True, db_index=True)
-
-    class Meta:
-        ordering = ['-published']
-
-
-class PrivateMessage(Message):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    message = models.OneToOneField(Message, on_delete=models.CASCADE,
-                                   parent_link=True)
-
-    class Meta:
-        ordering = []
+#
+#
+# # 1. Прямое наследование
+# class Message(models.Model):
+#     content = models.TextField()
+#     published = models.DateTimeField(auto_now_add=True, db_index=True)
+#
+#     class Meta:
+#         ordering = ['-published']
+#
+#
+# class PrivateMessage(Message):
+#     user = models.ForeignKey(User, on_delete=models.CASCADE)
+#     message = models.OneToOneField(Message, on_delete=models.CASCADE,
+#                                    parent_link=True)
+#
+#     class Meta:
+#         ordering = []
 
 
 # 2. Абстрактные модели
@@ -87,11 +87,31 @@ class PrivateMessage(Message):
 #         # ordering = ['order', 'name']
 
 
-class Comment(models.Model):
-    content = models.TextField()
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+# class Comment(models.Model):
+#     content = models.TextField()
+#     user = models.ForeignKey(User, on_delete=models.CASCADE)
+#
+#     class Meta:
+#         permissions = (
+#             ('hide_comments', 'Можно скрывать комментарии'),
+#         )
 
-    class Meta:
-        permissions = (
-            ('hide_comments', 'Можно скрывать комментарии'),
-        )
+
+class Student(models.Model):
+    first_name = models.CharField(max_length=50)
+    last_name = models.CharField(max_length=50)
+    email = models.EmailField(unique=True)
+    enrollment_date = models.DateField()
+
+    def __str__(self):
+        return f"{self.first_name} {self.last_name}"
+
+
+class Course(models.Model):
+    title = models.CharField(max_length=100)
+    description = models.TextField()
+    start_date = models.DateField()
+    students = models.ManyToManyField(Student, related_name="courses")
+
+    def __str__(self):
+        return self.title
