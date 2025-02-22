@@ -15,6 +15,7 @@ def get_timestamp_path(instance, filename):
     #                  splitext(filename)[1])
     return f'{datetime.now().timestamp()}{splitext(filename)[1]}'
 
+
 def validate_even(val):
     if val % 2 != 0:
         raise ValidationError('Число %(value)s нечётное', code='odd',
@@ -29,9 +30,9 @@ class MinMaxValueValidator:
     def __call__(self, val):
         if val < self.min_value or val > self.max_value:
             raise ValidationError('Введённое число должно'
-                  'находиться в диапазоне от %(min)s до %(max)s',
-                  code='out_of_range',
-                  params={'min': self.min_value, 'max': self.max_value})
+                                  'находиться в диапазоне от %(min)s до %(max)s',
+                                  code='out_of_range',
+                                  params={'min': self.min_value, 'max': self.max_value})
 
 
 class Img(models.Model):
