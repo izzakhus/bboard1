@@ -87,6 +87,8 @@ class PrivateMessage(Message):
 #         # ordering = ['order', 'name']
 
 
+
+
 class Comment(models.Model):
     content = models.TextField()
     user = models.ForeignKey(User, on_delete=models.CASCADE)
