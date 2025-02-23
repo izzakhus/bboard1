@@ -1,0 +1,52 @@
+<!-- testapp/templates/testapp/item_list.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Магазин</title>
+</head>
+<body>
+    <h1>Товары в наличии</h1>
+    {% if messages %}
+        {% for message in messages %}
+            <p {% if message.tags %}class="{{ message.tags }}"{% endif %}>{{ message }}</p>
+        {% endfor %}
+    {% endif %}
+
+    <h2>Доступные товары</h2>
+    {% for item in items %}
+        <div>
+            <h3>{{ item.name }}</h3>
+            <p>Цена: {{ item.price }} тенге</p>
+            <p>На складе: {{ item.stock }}</p>
+            <form method="post" action="{% url 'testapp:shop_view' %}">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="create_order">
+                <input type="hidden" name="item_id" value="{{ item.id }}">
+                <label for="quantity_{{ item.id }}">Количество:</label>
+                <input type="number" id="quantity_{{ item.id }}" name="quantity" value="1" min="1">
+                <button type="submit">Заказать</button>
+            </form>
+        </div>
+    {% empty %}
+        <p>Товаров нет</p>
+    {% endfor %}
+
+    <h2>Недавние заказы</h2>
+    {% for order in orders %}
+        <div>
+            <p>{{ order }} - {{ order.total_price }} тенге</p>
+            <p>Статус: {% if order.is_cancelled %}Отменен{% else %}Активен{% endif %}</p>
+            {% if not order.is_cancelled %}
+                <form method="post" action="{% url 'testapp:shop_view' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="cancel_order">
+                    <input type="hidden" name="order_id" value="{{ order.id }}">
+                    <button type="submit">Отменить заказ</button>
+                </form>
+            {% endif %}
+        </div>
+    {% empty %}
+        <p>Заказов нет</p>
+    {% endfor %}
+</body>
+</html>
