@@ -24,30 +24,30 @@ class AdvUser(models.Model):
 #         proxy = True
 
 
-# class Spare(models.Model):
-#     name = models.CharField(max_length=30)
-#     notes = GenericRelation('Note', related_query_name='spare')
-#
-#
-# class Machine(models.Model):
-#     name = models.CharField(max_length=30)
-#     spares = models.ManyToManyField(Spare, through='Kit',
-#                                     through_fields=('machine', 'spare'))
-#     notes = GenericRelation('Note')
-#
-#
-# class Kit(models.Model):
-#     machine = models.ForeignKey(Machine, on_delete=models.CASCADE)
-#     spare = models.ForeignKey(Spare, on_delete=models.CASCADE)
-#     count = models.IntegerField()
-#
-#
-# class Note(models.Model):
-#     content = models.TextField()
-#     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
-#     object_id = models.PositiveIntegerField()
-#     content_object = GenericForeignKey(ct_field='content_type',
-#                                        fk_field='object_id')
+class Spare(models.Model):
+    name = models.CharField(max_length=30)
+    notes = GenericRelation('Note', related_query_name='spare')
+
+
+class Machine(models.Model):
+    name = models.CharField(max_length=30)
+    spares = models.ManyToManyField(Spare, through='Kit',
+                                    through_fields=('machine', 'spare'))
+    notes = GenericRelation('Note')
+
+
+class Kit(models.Model):
+    machine = models.ForeignKey(Machine, on_delete=models.CASCADE)
+    spare = models.ForeignKey(Spare, on_delete=models.CASCADE)
+    count = models.IntegerField()
+
+
+class Note(models.Model):
+    content = models.TextField()
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    object_id = models.PositiveIntegerField()
+    content_object = GenericForeignKey(ct_field='content_type',
+                                       fk_field='object_id')
 
 
 # 1. Прямое наследование
